@@ -1,23 +1,26 @@
-import 'package:expiro_project/screens/homeScreen.dart';
-import 'package:expiro_project/screens/registerScreen.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import 'login_screen.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -51,10 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Welcome Back 👋',
+          Text("Don't have account?",
               style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
           SizedBox(height: 6),
-          Text('Login to your account',
+          Text('Register to get started',
               style: TextStyle(color: Colors.white70, fontSize: 15)),
         ],
       ),
@@ -65,8 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFF191A2C),
-
+        color: Color(0xFF111118),
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: SingleChildScrollView(
@@ -74,12 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildLabel('Full Name'),
+            _buildTextField(controller: _nameController, hint: 'Enter your full name', icon: Icons.person_outline),
+            const SizedBox(height: 16),
             _buildLabel('Email'),
-            _buildTextField(
-              controller: _emailController,
-              hint: 'Enter your email',
-              icon: Icons.email_outlined,
-            ),
+            _buildTextField(controller: _emailController, hint: 'Enter your email', icon: Icons.email_outlined),
             const SizedBox(height: 16),
             _buildLabel('Password'),
             _buildTextField(
@@ -90,22 +91,22 @@ class _LoginScreenState extends State<LoginScreen> {
               obscure: _obscurePassword,
               onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text("Forgot Password?"),
-              ),
+            const SizedBox(height: 16),
+            _buildLabel('Confirm Password'),
+            _buildTextField(
+              controller: _confirmPasswordController,
+              hint: 'Confirm your password',
+              icon: Icons.lock_outline,
+              isPassword: true,
+              obscure: _obscureConfirm,
+              onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
             ),
-
-            const SizedBox(height: 15),
+            const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed:  () => Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => const HomeScreen())),
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff1876f0),
                   shape: RoundedRectangleBorder(
@@ -113,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 child: const Text(
-                  "Login",
+                  "Register",
                   style: TextStyle(fontSize: 18 , color: Colors.white),
                 ),
               ),
@@ -126,11 +127,11 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Don't have an account?",style: TextStyle(color: Colors.white),),
+                const Text('Already have an account? ',style: TextStyle(color: Colors.white),),
                 TextButton(
                   onPressed: () => Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
-                  child: const Text("Register"),
+                      context, MaterialPageRoute(builder: (_) => const LoginScreen())),
+                  child: const Text("Login"),
                 ),
               ],
             ),
@@ -138,15 +139,15 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildLabel(String text) {
+  }Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(text,
           style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, fontWeight: FontWeight.w500)),
     );
-  }Widget _buildTextField({
+  }
+
+  Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
@@ -190,9 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF6C63FF), Color(0xFF3ECFCF)],
-          ),
+          gradient: const LinearGradient(colors: [Color(0xFF6C63FF), Color(0xFF3ECFCF)]),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(label,

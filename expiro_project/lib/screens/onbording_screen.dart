@@ -1,122 +1,221 @@
-import 'package:expiro_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'login_screen.dart';
 
-class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({super.key});
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
 
   @override
-  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  final PageController _controller = PageController();
-  bool isLastPage = false;
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<Map<String, dynamic>> _pages = [
+    {
+      'icon': Icons.notifications_active_outlined,
+      'title': 'Never Miss a Date',
+      'subtitle': 'Track all your important expiration dates in one place — IDs, subscriptions, insurance & more.',
+      'color': const Color(0xFF6C63FF),
+    },
+    {
+      'icon': Icons.access_time_rounded,
+      'title': 'Get Notified Early',
+      'subtitle': 'Receive smart reminders before anything expires so you always have time to renew.',
+      'color': const Color(0xFF3ECFCF),
+    },
+    {
+      'icon': Icons.check_circle_outline_rounded,
+      'title': 'Stay Organized',
+      'subtitle': 'Keep everything under control and never deal with the stress of expired documents again.',
+      'color': const Color(0xFFFF6B9D),
+    },
+  ];
+
+  void _goToLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+
+  void _nextPage() {
+    if (_currentPage < _pages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _goToLogin();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView(
-            controller: _controller,
-            onPageChanged: (index) {
-              setState(() {
-                isLastPage = index == 2;
-              });
-            },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF6C63FF), Color(0xFF3ECFCF)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
             children: [
-              buildPage(
-                image: 'assets/1.png',
-                title: 'Welcome',
-                subtitle: 'Discover new experience',
+              _buildSkipButton(),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (i) => setState(() => _currentPage = i),
+                  itemCount: _pages.length,
+                  itemBuilder: (_, i) => _buildPage(_pages[i]),
+                ),
               ),
-              buildPage(
-                image: 'assets/2.png',
-                title: 'Easy to Use',
-                subtitle: 'Simple and clean UI',
-              ),
-              buildPage(
-                image: 'assets/3.png',
-                title: 'Get Started',
-                subtitle: 'Let’s go الآن!',
-              ),
+              _buildBottomSection(),
             ],
           ),
+        ),
+      ),
+    );
+  }
 
-          /// Skip Button
-          Positioned(
-            top: 50,
-            right: 20,
-            child: TextButton(
-              onPressed: () {
-                _controller.jumpToPage(2);
-              },
-              child: const Text("Skip"),
+  Widget _buildSkipButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 12, 20, 0),
+        child: GestureDetector(
+          onTap: _goToLogin,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text('Skip',
+                style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+          ),
+        ),
+      ),
+    );
+  }Widget _buildPage(Map<String, dynamic> page) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 140, height: 140,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Container(
+                width: 100, height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(page['icon'] as IconData, color: Colors.white, size: 48),
+              ),
             ),
           ),
-
-          /// Bottom Controls
-          Positioned(
-            bottom: 50,
-            left: 20,
-            right: 20,
-            child: Column(
-              children: [
-                SmoothPageIndicator(
-                  controller: _controller,
-                  count: 3,
-                  effect: const WormEffect(
-                    dotHeight: 10,
-                    dotWidth: 10,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: () {
-                    if (isLastPage) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    } else {
-                      _controller.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    }
-                  },
-                  child: Text(isLastPage ? "Start" : "Next"),
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(height: 48),
+          Text(page['title'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
+              )),
+          const SizedBox(height: 16),
+          Text(page['subtitle'],
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 15,
+                height: 1.6,
+              )),
         ],
       ),
     );
   }
 
-  Widget buildPage({
-    required String image,
-    required String title,
-    required String subtitle,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
+  // ✅ الجزء المعدل — مفيش AnimatedContainer مع infinity
+  Widget _buildBottomSection() {
+    final isLast = _currentPage == _pages.length - 1;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(28, 24, 28, 36),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(image, height: 250),
-          const SizedBox(height: 30),
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Text(subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16)),
+          // Dots
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_pages.length, (i) {
+              final isActive = i == _currentPage;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: isActive ? 24 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: isActive ? Colors.white : Colors.white.withOpacity(0.35),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 32),
+          // Next / Get Started Button
+          GestureDetector(
+            onTap: _nextPage,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: isLast
+                  ? Container(
+                key: const ValueKey('getstarted'),
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Text('Get Started',
+                      style: TextStyle(
+                        color: Color(0xFF6C63FF),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+              )
+                  : Container(
+                key: const ValueKey('next'),
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: const Center(
+                  child: Icon(Icons.arrow_forward_rounded,
+                      color: Color(0xFF6C63FF), size: 24),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
