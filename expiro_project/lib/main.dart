@@ -1,4 +1,3 @@
-import 'package:expiro_project/screens/login_screen.dart';
 import 'package:expiro_project/screens/onbording_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:OnBoardingScreen(),
+      home:OnboardingScreen(),
     );
   }
 }
