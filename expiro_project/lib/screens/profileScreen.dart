@@ -1,6 +1,8 @@
+import 'package:expiro_project/screens/settingScreen.dart';
 import 'package:flutter/material.dart';
 
 import 'homeScreen.dart';
+import 'login_screen.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -263,7 +265,20 @@ class ProfilePage extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        if (s['label'] == 'Log Out') {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => LoginScreen()),
+                                (route) => false,
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => SettingsScreen()),
+                          );
+                        }
+                      },
                       leading: Container(
                         width: 36, height: 36,
                         decoration: BoxDecoration(

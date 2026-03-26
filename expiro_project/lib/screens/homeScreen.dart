@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:expiro_project/screens/profileScreen.dart';
+import 'package:expiro_project/screens/settingScreen.dart';
 import 'package:expiro_project/screens/statsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../service/notification_service.dart';
 
 enum ItemStatus { expired, soon, fresh }
 
@@ -123,11 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadItems().catchError((e){
-      setState(() {
-        _isLoading=false;
-      });
-    }); // ← تحميل الـ items من الـ storage أول ما الـ screen يفتح
+    NotificationService().init(); // ← جديد
+    _loadItems().catchError((e) {
+      setState(() => _isLoading = false);
+    });
   }
 
   // ── تحميل الـ items من الـ storage ──
@@ -175,21 +177,16 @@ class _HomeScreenState extends State<HomeScreen> {
   int get soonCount    => _items.where((e) => e.status == ItemStatus.soon).length;
 
   Future<void> _addItem(String name, ProductType type, DateTime expiry, int quantity) async {
-    setState(() {
-      _items.add(Item(
-        id:         _idCounter++,
-        name:       name,
-        type:       type,
-        expiryDate: expiry,
-        quantity:   quantity,
-      ));
-    });
-    await _saveItems(); // ← حفظ بعد الإضافة
+    final item = Item(id: _idCounter++, name: name, type: type, expiryDate: expiry, quantity: quantity);
+    setState(() => _items.add(item));
+    await NotificationService().scheduleItemNotification(item); // ← جديد
+    await _saveItems();
   }
 
   Future<void> _deleteItem(int id) async {
+    await NotificationService().cancelItemNotification(id); // ← جديد
     setState(() => _items.removeWhere((e) => e.id == id));
-    await _saveItems(); // ← حفظ بعد الحذف
+    await _saveItems();
   }
 
   void _openAddSheet() {
@@ -216,8 +213,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final pages = [
       _buildHome(),
       StatsScreen(items: _items),
-      _buildSettings(),
+      const SettingsScreen(),
     ];
+
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
@@ -261,9 +259,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Expiration Tracker',
+                      Text('Expiro',
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.black)),
                       Text('Never let things go to waste',
@@ -276,8 +274,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {}),
                 IconButton(
                   icon: const Icon(Icons.person_outline, color: Colors.black),
-                  onPressed: () => Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => const ProfilePage())),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfilePage()),
+                  ),
                 ),
               ],
             ),

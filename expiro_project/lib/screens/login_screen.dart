@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFF191A2C),
+        color: Color(0xFF001B30),
 
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),

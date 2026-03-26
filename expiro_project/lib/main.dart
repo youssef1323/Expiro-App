@@ -1,11 +1,12 @@
 import 'package:expiro_project/screens/onbording_screen.dart';
+import 'package:expiro_project/screens/settingScreen.dart';
+import 'package:expiro_project/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
-void main(
-    )
-
-{
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // ← جديد
+  await NotificationService().init();        // ← جديد
+  runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

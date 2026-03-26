@@ -68,7 +68,7 @@ class RegisterScreen extends StatefulWidget {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFF111118),
+        color: Color(0xFF001B30),
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: SingleChildScrollView(
